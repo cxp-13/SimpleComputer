@@ -1,0 +1,7 @@
+<resources>
+    <string name="app_name">SimpleComputer</string>
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_computer">Hello computer fragment</string>
+    <string name="hello_history">Hello history fragment</string>
+
+</resources>
