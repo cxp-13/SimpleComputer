@@ -7,10 +7,11 @@ import com.example.simplecomputer.entity.OperationEntity
 
 @Dao
 interface OperationDao {
+//    suspend 报错，会导致多了一个参数  ---》  kotlin.coroutines.Continuation<? super kotlin.Unit> continuation
     @Insert
-    fun insert(operationDao: OperationDao)
+   fun insert(operationEntity: OperationEntity)
 
-    @Query("select * from operation limit 1 order by date desc")
-    fun query():OperationEntity
+//    @Query("select * from operation ")
+//    fun query() : List<OperationEntity>
 
 }

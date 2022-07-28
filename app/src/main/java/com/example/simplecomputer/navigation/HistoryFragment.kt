@@ -38,9 +38,6 @@ class HistoryFragment : Fragment() {
             val controller = view.findNavController()
             controller.navigate(R.id.action_historyFragment_to_computerFragment)
         }
-
-
-
     }
 
 

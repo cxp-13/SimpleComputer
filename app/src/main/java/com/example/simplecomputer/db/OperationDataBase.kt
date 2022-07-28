@@ -1,32 +1,51 @@
 package com.example.simplecomputer.db
 
 import android.content.Context
-import androidx.room.Database
-import androidx.room.Entity
-import androidx.room.Room
-import androidx.room.RoomDatabase
+import androidx.room.*
 import com.example.simplecomputer.dao.OperationDao
+import com.example.simplecomputer.entity.OperationEntity
 
-@Database(entities = [OperationDataBase::class], version = 1)
+@Database(
+    entities = [OperationEntity::class],
+    version = 2,
+//    autoMigrations = [AutoMigration(from = 1, to = 2)],
+//    exportSchema=false
+)
 abstract class OperationDataBase : RoomDatabase() {
 
     abstract fun getOperationDao(): OperationDao
 
-
     companion object {
-        private lateinit var INSTANCE: OperationDataBase
+        private var INSTANCE: OperationDataBase? = null
         fun getInstance(context: Context): OperationDataBase {
 
-            if (INSTANCE == null) {
-                INSTANCE = synchronized(this) {
-                    Room.databaseBuilder(
-                        context = context.applicationContext,
-                        OperationDataBase::class.java,
-                        "test"
-                    ).build()
-                }
+            val tmpInstance = INSTANCE
+            if (tmpInstance != null) {
+                return tmpInstance
             }
-            return INSTANCE
+
+            synchronized(this) {
+
+                var instance =
+                    Room.databaseBuilder(
+                        context.applicationContext,
+                        OperationDataBase::class.java,
+                        "testDb"
+                    ).fallbackToDestructiveMigration().build()
+
+                INSTANCE = instance
+                return instance
+
+            }
+
+//            if (INSTANCE == null) {
+//                INSTANCE = Room.databaseBuilder(
+//                    context.applicationContext,
+//                    OperationDataBase::class.java,
+//                    "test"
+//                ).build()
+//            }
+//            return INSTANCE as OperationDataBase
         }
     }
 
