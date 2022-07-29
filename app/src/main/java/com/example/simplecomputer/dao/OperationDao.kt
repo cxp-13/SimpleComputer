@@ -1,5 +1,6 @@
 package com.example.simplecomputer.dao
 
+import androidx.lifecycle.LiveData
 import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.Query
@@ -7,11 +8,14 @@ import com.example.simplecomputer.entity.OperationEntity
 
 @Dao
 interface OperationDao {
-//    suspend 报错，会导致多了一个参数  ---》  kotlin.coroutines.Continuation<? super kotlin.Unit> continuation
+    //    suspend 报错，会导致多了一个参数  ---》  kotlin.coroutines.Continuation<? super kotlin.Unit> continuation
     @Insert
-   fun insert(operationEntity: OperationEntity)
+    fun insert(operationEntity: OperationEntity)
 
-//    @Query("select * from operation ")
-//    fun query() : List<OperationEntity>
+    @Query("select * from operation ")
+    fun queryLiveData(): LiveData<List<OperationEntity>>
+
+    @Query("select * from operation ")
+    fun query(): List<OperationEntity>
 
 }

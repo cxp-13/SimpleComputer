@@ -7,7 +7,7 @@ import com.example.simplecomputer.entity.OperationEntity
 
 @Database(
     entities = [OperationEntity::class],
-    version = 2,
+    version = 1,
 //    autoMigrations = [AutoMigration(from = 1, to = 2)],
 //    exportSchema=false
 )

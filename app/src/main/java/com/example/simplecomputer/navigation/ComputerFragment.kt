@@ -8,6 +8,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
 import androidx.databinding.DataBindingUtil
+import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.findNavController
 import com.example.simplecomputer.R
 import com.example.simplecomputer.dao.OperationDao
@@ -15,6 +16,8 @@ import com.example.simplecomputer.databinding.FragmentComputerBinding
 import com.example.simplecomputer.databinding.Record
 import com.example.simplecomputer.db.OperationDataBase
 import com.example.simplecomputer.entity.OperationEntity
+import com.example.simplecomputer.repository.OperationRepository
+import com.example.simplecomputer.viewmodel.OperationViewModel
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import java.util.regex.Matcher
@@ -38,19 +41,17 @@ class ComputerFragment : Fragment() {
     private lateinit var record: Record
 //    private lateinit var recordStr: ObservableField<StringBuffer>
 
-    private lateinit var operationDao: OperationDao
-
+    //    private lateinit var operationDao: OperationDao
+    private lateinit var operationRepository: OperationRepository
 
 //    private lateinit var dataBinding: FragmentComputerBinding
 
     private lateinit var binding: FragmentComputerBinding
 
-
     override fun onCreate(savedInstanceState: Bundle?) {
 //        recordStr = ObservableField<StringBuffer>()
         record = Record(StringBuffer("0"))
-        operationDao = OperationDataBase.getInstance(this.context!!).getOperationDao()
-
+        operationRepository = OperationRepository(context!!)
         super.onCreate(savedInstanceState)
     }
 
@@ -165,7 +166,7 @@ class ComputerFragment : Fragment() {
         binding.back.setOnClickListener {
             record.value.also {
                 var len = it.get()?.length
-                if (len != null) {
+                if (len != null && len > 0) {
                     record.value.set(StringBuffer(it.get()?.substring(0, len - 1)))
                 }
             }
@@ -174,6 +175,12 @@ class ComputerFragment : Fragment() {
             record.value.let {
                 record.value.set(StringBuffer(it.get()?.append(".")))
             }
+        }
+//        查询全部数据
+        binding.button14.setOnClickListener {
+                operationRepository.getAllLiveData()?.value?.forEach {
+                    Log.e(TAG, "onViewCreated: $it",)
+                }
         }
         binding.equalSign.setOnClickListener {
             var pattern: Pattern =
@@ -220,15 +227,10 @@ class ComputerFragment : Fragment() {
                     type = type,
                     date = System.currentTimeMillis()
                 )
-                GlobalScope.launch {
-                    operationDao.insert(operationEntity)
-                    Log.d(TAG, "onViewCreated: 插入成功")
-                }
+                operationRepository.insert(operationEntity)
             } else {
                 Toast.makeText(this.context, "格式错误 正确格式：数字+运算符+数字", 2).show()
             }
-
-
         }
 
     }
