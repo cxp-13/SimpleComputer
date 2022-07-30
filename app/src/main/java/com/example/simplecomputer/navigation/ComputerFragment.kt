@@ -8,6 +8,9 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
 import androidx.databinding.DataBindingUtil
+import androidx.fragment.app.activityViewModels
+import androidx.fragment.app.viewModels
+import androidx.lifecycle.LiveData
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.findNavController
 import com.example.simplecomputer.R
@@ -38,6 +41,9 @@ class ComputerFragment : Fragment() {
 //        }
 
 
+    //    请注意，这两个 Fragment 都会检索包含它们的 Activity。这样，当这两个 Fragment 各自获取 ViewModelProvider 时，它们会收到相同的 SharedViewModel 实例（其范围限定为该 Activity）
+    private val myViewModel: OperationViewModel by activityViewModels()
+
     private lateinit var record: Record
 //    private lateinit var recordStr: ObservableField<StringBuffer>
 
@@ -62,9 +68,25 @@ class ComputerFragment : Fragment() {
         // Inflate the layout for this fragment
 //        binding = FragmentComputerBinding.inflate(inflater, container, false)
 
+
+        myViewModel.repository = operationRepository
+
+        myViewModel.operationEntityListForId?.observe(viewLifecycleOwner) {
+            Log.e("record", "computer观察者:${it} ")
+            //            val entity = it[0]
+            //            val str: String = entity.firstArg.toString() + entity.type + entity.secondArg.toString()
+            //            record.value.set(StringBuffer(str))
+
+            val oe = it?.get(0)
+            val newRecord: String = oe?.firstArg.toString() + oe?.type + oe?.secondArg.toString()
+
+            record.value.set(StringBuffer(newRecord))
+        }
+
         binding =
             DataBindingUtil.inflate(inflater, R.layout.fragment_computer, container, false)
         binding.record = record
+
 
 //        return inflater.inflate(R.layout.fragment_computer, container, false)
         return binding.root
@@ -178,9 +200,9 @@ class ComputerFragment : Fragment() {
         }
 //        查询全部数据
         binding.button14.setOnClickListener {
-                operationRepository.getAllLiveData()?.value?.forEach {
-                    Log.e(TAG, "onViewCreated: $it",)
-                }
+            operationRepository.getAllLiveData()?.value?.forEach {
+                Log.e(TAG, "onViewCreated: $it")
+            }
         }
         binding.equalSign.setOnClickListener {
             var pattern: Pattern =
@@ -232,6 +254,12 @@ class ComputerFragment : Fragment() {
                 Toast.makeText(this.context, "格式错误 正确格式：数字+运算符+数字", 2).show()
             }
         }
+
+    }
+
+    override fun onResume() {
+        super.onResume()
+
 
     }
 

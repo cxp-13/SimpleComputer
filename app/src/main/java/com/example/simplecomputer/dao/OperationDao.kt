@@ -4,6 +4,7 @@ import androidx.lifecycle.LiveData
 import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.Query
+import androidx.room.Update
 import com.example.simplecomputer.entity.OperationEntity
 
 @Dao
@@ -17,5 +18,11 @@ interface OperationDao {
 
     @Query("select * from operation ")
     fun query(): List<OperationEntity>
+
+    @Query("select * from operation where id = :id")
+    fun queryList(id: Int): LiveData<List<OperationEntity>>
+
+    @Update(entity = OperationEntity::class)
+    fun update(operationEntity: OperationEntity)
 
 }
