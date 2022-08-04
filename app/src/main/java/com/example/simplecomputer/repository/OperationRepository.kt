@@ -8,13 +8,18 @@ import com.example.simplecomputer.db.OperationDataBase
 import com.example.simplecomputer.entity.OperationEntity
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
+/**
+ * @Author:cxp
+ * @Date: 2022/8/4 14:09
+ * @Description:数据库的Control层
+*/
 
 class OperationRepository(var context: Context) {
-
+//获取Dao层对象
     private var operationDao: OperationDao? = null
 
     init {
-        operationDao = OperationDataBase.getInstance(context).getOperationDao()
+        operationDao = OperationDataBase.getInstance(context)?.getOperationDao()
     }
 
     fun insert(operationEntity: OperationEntity) {
@@ -35,9 +40,8 @@ class OperationRepository(var context: Context) {
         }
         return temp
     }
-
+//获取指定id的历史记录
     fun getList(id: Int): LiveData<List<OperationEntity>>? {
        return operationDao?.queryList(id)
     }
-
 }

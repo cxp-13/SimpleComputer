@@ -249,7 +249,7 @@
             android:layout_width="match_parent"
             android:layout_height="250dp"
             android:background="@color/cardview_shadow_start_color"
-            android:text="@{record.value}"
+            android:text="@{record.str}"
             android:textSize="30dp"
             app:layout_constraintBottom_toTopOf="@+id/clear"
             app:layout_constraintEnd_toEndOf="parent"

@@ -15,16 +15,17 @@ import com.example.simplecomputer.databinding.FragmentHistoryBinding
 import com.example.simplecomputer.repository.OperationRepository
 import com.example.simplecomputer.viewmodel.OperationViewModel
 
+/**
+ * @Author:cxp
+ * @Date: 2022/8/4 11:56
+ * @Description:历史记录
+*/
 
 class HistoryFragment : Fragment() {
-
+//数据绑定
     private lateinit var binding: FragmentHistoryBinding
 
-    private lateinit var  operationRepository: OperationRepository
-
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-    }
+    private lateinit var operationRepository: OperationRepository
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -32,26 +33,20 @@ class HistoryFragment : Fragment() {
     ): View? {
         binding = FragmentHistoryBinding.inflate(inflater, container, false)
         operationRepository = OperationRepository(context!!)
-
 //        val myViewModel = ViewModelProvider(this, ViewModelProvider.NewInstanceFactory())
 //            .get(OperationViewModel::class.java)
-        val myViewModel:OperationViewModel by activityViewModels()
-
+        val myViewModel: OperationViewModel by activityViewModels()
         //初始viewModel里面的control层对象
         myViewModel.repository = operationRepository
-
 //初始化recycleView适配器
         val historyAdapter =
             HistoryAdapter(operationRepository.getAllLiveData()?.value ?: ArrayList(), myViewModel)
-
         binding.recyclerView.adapter = historyAdapter
-
-
-        myViewModel.getOperations()?.observe(viewLifecycleOwner){
+//当数据库数据改动时，更新历史记录的数据
+        myViewModel.getOperations()?.observe(viewLifecycleOwner) {
             historyAdapter.datas = it
             historyAdapter.notifyDataSetChanged()
         }
-
         return binding.root
     }
 
@@ -63,9 +58,5 @@ class HistoryFragment : Fragment() {
             val controller = view.findNavController()
             controller.navigate(R.id.action_historyFragment_to_computerFragment)
         }
-
-
     }
-
-
 }
