@@ -23,11 +23,10 @@ abstract class OperationDataBase : RoomDatabase() {
 
     companion object {
         private var INSTANCE: OperationDataBase? = null
+
         //        获取数据库的唯一实例(懒汉式)
-        fun getInstance(context: Context): OperationDataBase? {
-            if (INSTANCE != null) {
-                return INSTANCE
-            } else {
+        fun  getInstance(context: Context): OperationDataBase? {
+            if (INSTANCE == null) {
                 synchronized(this) {
                     INSTANCE =
                         Room.databaseBuilder(
@@ -38,14 +37,7 @@ abstract class OperationDataBase : RoomDatabase() {
                     return INSTANCE
                 }
             }
-//            if (INSTANCE == null) {
-//                INSTANCE = Room.databaseBuilder(
-//                    context.applicationContext,
-//                    OperationDataBase::class.java,
-//                    "test"
-//                ).build()
-//            }
-//            return INSTANCE as OperationDataBase
+            return INSTANCE
         }
     }
 }

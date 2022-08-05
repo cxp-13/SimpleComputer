@@ -2,14 +2,12 @@ package com.example.simplecomputer.navigation
 
 import android.os.Bundle
 import android.util.Log
-import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
 import androidx.databinding.DataBindingUtil
-import androidx.fragment.app.activityViewModels
-import androidx.fragment.app.viewModels
+import androidx.fragment.app.*
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.findNavController
@@ -66,6 +64,9 @@ class ComputerFragment : Fragment() {
         record = Record(StringBuffer("0"))
 //        初始化数据库类
         operationRepository = OperationRepository(context!!)
+
+
+
         super.onCreate(savedInstanceState)
     }
 
@@ -73,6 +74,10 @@ class ComputerFragment : Fragment() {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
+
+
+
+
         // 膨胀这个片段的布局
 //        binding = FragmentComputerBinding.inflate(inflater, container, false)
 //        给ViewModel中的数据库对象赋值
