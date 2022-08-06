@@ -95,5 +95,9 @@ android {
         // optional - Test helpers for LiveData
         testImplementation "androidx.arch.core:core-testing:$arch_version"
 
+        def paging_version = "3.1.1"
+
+        implementation "androidx.paging:paging-runtime:$paging_version"
+
     }
 }

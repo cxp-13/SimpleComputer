@@ -7,13 +7,16 @@ import android.view.ViewGroup
 import android.widget.Button
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
+import androidx.lifecycle.lifecycleScope
 import androidx.navigation.findNavController
 import com.example.simplecomputer.R
 import com.example.simplecomputer.adapter.HistoryAdapter
+import com.example.simplecomputer.adapter.HistoryPagingAdapter
 import com.example.simplecomputer.async_task.AsyncTask
 import com.example.simplecomputer.databinding.FragmentHistoryBinding
 import com.example.simplecomputer.repository.OperationRepository
 import com.example.simplecomputer.viewmodel.OperationViewModel
+import kotlinx.coroutines.launch
 
 /**
  * @Author:cxp
@@ -29,6 +32,7 @@ class HistoryFragment : Fragment() {
 
     private lateinit var asyncTask: AsyncTask
 
+    private lateinit var historyPagingAdapter: HistoryPagingAdapter
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
     }
@@ -46,19 +50,30 @@ class HistoryFragment : Fragment() {
 //        val myViewModel = ViewModelProvider(this, ViewModelProvider.NewInstanceFactory())
 //            .get(OperationViewModel::class.java)
         val myViewModel: OperationViewModel by activityViewModels()
+
+        myViewModel.context = context
         //初始viewModel里面的control层对象
         myViewModel.repository = operationRepository
 //初始化recycleView适配器
-        val historyAdapter =
-            HistoryAdapter(operationRepository.getAllLiveData()?.value ?: ArrayList(), myViewModel)
-        binding.recyclerView.adapter = historyAdapter
-//当数据库数据改动时，更新历史记录的数据
-        myViewModel.getOperations()?.observe(viewLifecycleOwner) {
-            historyAdapter.datas = it
-            historyAdapter.notifyDataSetChanged()
+//        val historyAdapter =
+//            HistoryAdapter(operationRepository.getAllLiveData()?.value ?: ArrayList(), myViewModel)
+//        binding.recyclerView.adapter = historyAdapter
+
+        historyPagingAdapter = HistoryPagingAdapter(myViewModel)
+        binding.recyclerView.adapter = historyPagingAdapter
+        val pagingData = myViewModel.getPagingData()
+
+        lifecycleScope.launch {
+            pagingData?.collect{
+                historyPagingAdapter.submitData(it)
+            }
         }
 
-
+////当数据库数据改动时，更新历史记录的数据
+//        myViewModel.getOperations()?.observe(viewLifecycleOwner) {
+//            historyAdapter.datas = it
+//            historyAdapter.notifyDataSetChanged()
+//        }
 
         return binding.root
     }

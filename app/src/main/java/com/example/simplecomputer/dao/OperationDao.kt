@@ -1,6 +1,7 @@
 package com.example.simplecomputer.dao
 
 import androidx.lifecycle.LiveData
+import androidx.paging.PagingSource
 import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.Query
@@ -30,4 +31,8 @@ interface OperationDao {
 //  更新单个运算记录
     @Update(entity = OperationEntity::class)
     fun update(operationEntity: OperationEntity)
+
+    //   查询全部的运算记录(paging3)
+    @Query("select * from operation ")
+    fun queryPaging(): PagingSource<Int, OperationEntity>
 }

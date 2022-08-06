@@ -5,6 +5,8 @@ import android.view.ViewGroup
 import android.widget.TextView
 import androidx.databinding.DataBindingUtil
 import androidx.navigation.findNavController
+import androidx.paging.PagingDataAdapter
+import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import com.example.simplecomputer.R
 import com.example.simplecomputer.databinding.ItemBinding
@@ -13,24 +15,31 @@ import com.example.simplecomputer.viewmodel.OperationViewModel
 import java.text.SimpleDateFormat
 import java.util.*
 
-/**
- * @Author:cxp
- * @Date: 2022/8/4 9:29
- * @Description:历史记录RecyclerView的适配器
- */
+class HistoryPagingAdapter(var myViewModel: OperationViewModel) :
+    PagingDataAdapter<OperationEntity, HistoryPagingAdapter.HistoryPagingHolder>(
+        COMPARATOR
+    ) {
 
-class HistoryAdapter(var datas: List<OperationEntity>, var myViewModel: OperationViewModel) :
-    RecyclerView.Adapter<HistoryAdapter.HistoryHolder>() {
-    //貌似没什么用
-    fun setData(datas: List<OperationEntity>) {
-        this.datas = datas
+    companion object {
+        private val COMPARATOR = object : DiffUtil.ItemCallback<OperationEntity>() {
+            override fun areItemsTheSame(oldItem: OperationEntity, newItem: OperationEntity): Boolean {
+                return oldItem.id == newItem.id
+            }
+
+            override fun areContentsTheSame(oldItem: OperationEntity, newItem: OperationEntity): Boolean {
+                return oldItem == newItem
+            }
+        }
     }
 
-    //    ViewHolder 是包含列表中各列表项的布局的 View 的封装容器
-    inner class HistoryHolder(var dataBinding: ItemBinding) :
+
+    inner class HistoryPagingHolder(var dataBinding: ItemBinding) :
         RecyclerView.ViewHolder(dataBinding.root)
 
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): HistoryHolder {
+    override fun onCreateViewHolder(
+        parent: ViewGroup,
+        viewType: Int
+    ): HistoryPagingHolder {
 
         var dataBinding: ItemBinding = DataBindingUtil.inflate(
             LayoutInflater.from(parent.context),
@@ -38,20 +47,18 @@ class HistoryAdapter(var datas: List<OperationEntity>, var myViewModel: Operatio
             parent,
             false
         )
-        return HistoryHolder(dataBinding)
+        return HistoryPagingHolder(dataBinding)
     }
 
-    override fun onBindViewHolder(holder: HistoryHolder, position: Int) {
-
-
-
-//        xml文件的运算对象赋值
-        holder.dataBinding.operation = datas[position]
+    override fun onBindViewHolder(holder: HistoryPagingHolder, position: Int) {
 //        获取历史记录的每行对象
-        val entity = datas[position]
+        val entity: OperationEntity? = getItem(position)
+//        xml文件的运算对象赋值
+        holder.dataBinding.operation = entity
+
 //        获取对象的时间戳
-        val timeStamp = entity.date
-        val date = Date(timeStamp)
+        val timeStamp = entity?.date
+        val date = Date(timeStamp!!)
         val format = SimpleDateFormat("yyyy-MM-dd HH:mm:ss")
 //        xml文件的时间参数赋值
         holder.dataBinding.operationDate = format.format(date)
@@ -68,9 +75,5 @@ class HistoryAdapter(var datas: List<OperationEntity>, var myViewModel: Operatio
             val controller = holder.itemView.findNavController()
             controller.navigate(R.id.action_historyFragment_to_computerFragment)
         }
-    }
-
-    override fun getItemCount(): Int {
-        return datas.size
     }
 }

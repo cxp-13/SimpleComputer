@@ -1,11 +1,16 @@
 package com.example.simplecomputer.viewmodel
 
+import android.content.Context
 import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import androidx.paging.PagingData
+import com.example.simplecomputer.api.OpRepository
 import com.example.simplecomputer.entity.OperationEntity
 import com.example.simplecomputer.repository.OperationRepository
+import kotlinx.coroutines.flow.Flow
+
 /**
  * @Author:cxp
  * @Date: 2022/8/4 14:16
@@ -13,6 +18,8 @@ import com.example.simplecomputer.repository.OperationRepository
 */
 
 class OperationViewModel : ViewModel() {
+
+    var context: Context ?= null
 
     var repository: OperationRepository? = null
 //存放点击单个历史记录过后的列表
@@ -30,7 +37,8 @@ class OperationViewModel : ViewModel() {
         Log.e("record", "setOperationEntity: ${operationEntityListForId?.value}", )
     }
 
-
-
-
+    fun getPagingData(): Flow<PagingData<OperationEntity>>{
+        OpRepository.context = context
+        return OpRepository.getPagingData()
+    }
 }

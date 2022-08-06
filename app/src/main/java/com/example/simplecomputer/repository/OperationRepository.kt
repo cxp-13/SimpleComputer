@@ -3,6 +3,7 @@ package com.example.simplecomputer.repository
 import android.content.Context
 import android.util.Log
 import androidx.lifecycle.LiveData
+import androidx.paging.PagingSource
 import com.example.simplecomputer.dao.OperationDao
 import com.example.simplecomputer.db.OperationDataBase
 import com.example.simplecomputer.entity.OperationEntity
@@ -43,5 +44,10 @@ class OperationRepository(var context: Context) {
 //获取指定id的历史记录
     fun getList(id: Int): LiveData<List<OperationEntity>>? {
        return operationDao?.queryList(id)
+    }
+
+
+    fun getAllPaging(): PagingSource<Int, OperationEntity>? {
+        return operationDao?.queryPaging()
     }
 }

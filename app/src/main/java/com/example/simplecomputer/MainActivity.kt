@@ -27,5 +27,8 @@ class MainActivity : AppCompatActivity() {
 //            replace(R.id.fragmentContainerView, fragment)
 //            addToBackStack(null)
 //        }
+
+
+
     }
 }
