@@ -61,9 +61,10 @@ class HistoryFragment : Fragment() {
 
         historyPagingAdapter = HistoryPagingAdapter(myViewModel)
         binding.recyclerView.adapter = historyPagingAdapter
-        val pagingData = myViewModel.getPagingData()
-
+//paging3启动
         lifecycleScope.launch {
+            val pagingData = myViewModel.getPagingData()
+
             pagingData?.collect{
                 historyPagingAdapter.submitData(it)
             }

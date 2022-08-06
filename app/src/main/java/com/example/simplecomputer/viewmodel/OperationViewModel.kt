@@ -36,7 +36,7 @@ class OperationViewModel : ViewModel() {
         operationEntityListForId = repository?.getList(id)
         Log.e("record", "setOperationEntity: ${operationEntityListForId?.value}", )
     }
-
+//paging3返回数据
     fun getPagingData(): Flow<PagingData<OperationEntity>>{
         OpRepository.context = context
         return OpRepository.getPagingData()

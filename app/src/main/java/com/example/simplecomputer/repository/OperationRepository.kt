@@ -7,16 +7,19 @@ import androidx.paging.PagingSource
 import com.example.simplecomputer.dao.OperationDao
 import com.example.simplecomputer.db.OperationDataBase
 import com.example.simplecomputer.entity.OperationEntity
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.async
 import kotlinx.coroutines.launch
+
 /**
  * @Author:cxp
  * @Date: 2022/8/4 14:09
  * @Description:数据库的Control层
-*/
+ */
 
 class OperationRepository(var context: Context) {
-//获取Dao层对象
+    //获取Dao层对象
     private var operationDao: OperationDao? = null
 
     init {
@@ -34,16 +37,20 @@ class OperationRepository(var context: Context) {
         return operationDao?.queryLiveData()
     }
 
-    fun getAll(): List<OperationEntity>? {
-        var temp: List<OperationEntity>? = null
+    suspend fun getAll(): List<OperationEntity>? {
+        var items: List<OperationEntity>? = null
         GlobalScope.launch {
-            temp = operationDao!!.query()
-        }
-        return temp
+            val temp = async(Dispatchers.IO) {
+                operationDao!!.query()
+            }
+            items = temp.await()
+        }.join()
+        return items
     }
-//获取指定id的历史记录
+
+    //获取指定id的历史记录
     fun getList(id: Int): LiveData<List<OperationEntity>>? {
-       return operationDao?.queryList(id)
+        return operationDao?.queryList(id)
     }
 
 

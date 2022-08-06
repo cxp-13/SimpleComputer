@@ -9,6 +9,11 @@ import com.example.simplecomputer.entity.OperationEntity
 import com.example.simplecomputer.paging.OpPagingSource
 import com.example.simplecomputer.repository.OperationRepository
 import kotlinx.coroutines.flow.Flow
+/**
+ * @Author:cxp
+ * @Date: 2022/8/6 20:06
+ * @Description:显示来自 PagingSource 的 PagingData 对象的响应式流
+*/
 
 object OpRepository {
     private const val PAGE_SIZE = 10
