@@ -14,6 +14,11 @@ import com.example.simplecomputer.entity.OperationEntity
 import com.example.simplecomputer.viewmodel.OperationViewModel
 import java.text.SimpleDateFormat
 import java.util.*
+/**
+ * @Author:cxp
+ * @Date: 2022/8/9 17:36
+ * @Description: paging3的适配器
+*/
 
 class HistoryPagingAdapter(var myViewModel: OperationViewModel) :
     PagingDataAdapter<OperationEntity, HistoryPagingAdapter.HistoryPagingHolder>(
@@ -40,7 +45,6 @@ class HistoryPagingAdapter(var myViewModel: OperationViewModel) :
         parent: ViewGroup,
         viewType: Int
     ): HistoryPagingHolder {
-
         var dataBinding: ItemBinding = DataBindingUtil.inflate(
             LayoutInflater.from(parent.context),
             R.layout.item,

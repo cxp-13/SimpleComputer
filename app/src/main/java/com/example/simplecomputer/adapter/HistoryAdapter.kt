@@ -18,7 +18,7 @@ import java.util.*
  * @Date: 2022/8/4 9:29
  * @Description:历史记录RecyclerView的适配器
  */
-
+@Deprecated("采用paging3之前的做法: 直接实现RecyclerView.Adapter")
 class HistoryAdapter(var datas: List<OperationEntity>, var myViewModel: OperationViewModel) :
     RecyclerView.Adapter<HistoryAdapter.HistoryHolder>() {
     //貌似没什么用
@@ -42,9 +42,6 @@ class HistoryAdapter(var datas: List<OperationEntity>, var myViewModel: Operatio
     }
 
     override fun onBindViewHolder(holder: HistoryHolder, position: Int) {
-
-
-
 //        xml文件的运算对象赋值
         holder.dataBinding.operation = datas[position]
 //        获取历史记录的每行对象

@@ -42,15 +42,13 @@ class HistoryFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View? {
         binding = FragmentHistoryBinding.inflate(inflater, container, false)
+//        历史记录出来前的进度条
         asyncTask = AsyncTask(binding)
-
         asyncTask.execute(10)
-
         operationRepository = OperationRepository(context!!)
 //        val myViewModel = ViewModelProvider(this, ViewModelProvider.NewInstanceFactory())
 //            .get(OperationViewModel::class.java)
         val myViewModel: OperationViewModel by activityViewModels()
-
         myViewModel.context = context
         //初始viewModel里面的control层对象
         myViewModel.repository = operationRepository
@@ -58,24 +56,21 @@ class HistoryFragment : Fragment() {
 //        val historyAdapter =
 //            HistoryAdapter(operationRepository.getAllLiveData()?.value ?: ArrayList(), myViewModel)
 //        binding.recyclerView.adapter = historyAdapter
-
         historyPagingAdapter = HistoryPagingAdapter(myViewModel)
         binding.recyclerView.adapter = historyPagingAdapter
 //paging3启动
         lifecycleScope.launch {
             val pagingData = myViewModel.getPagingData()
-
-            pagingData?.collect{
+//            收集流
+            pagingData?.collect {
                 historyPagingAdapter.submitData(it)
             }
         }
-
 ////当数据库数据改动时，更新历史记录的数据
 //        myViewModel.getOperations()?.observe(viewLifecycleOwner) {
 //            historyAdapter.datas = it
 //            historyAdapter.notifyDataSetChanged()
 //        }
-
         return binding.root
     }
 

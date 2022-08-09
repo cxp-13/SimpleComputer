@@ -30,7 +30,6 @@ class OpPagingSource(private val operationRepository: OperationRepository) :
 //            GlobalScope.launch {
 //                val temp = async(Dispatchers.IO) {
 //                    operationRepository.getAll()
-//
 //                }
 //                items = temp.await()
 //            }.join()

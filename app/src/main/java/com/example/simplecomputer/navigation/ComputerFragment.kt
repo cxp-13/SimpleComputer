@@ -10,6 +10,7 @@ import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.*
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.lifecycleScope
 import androidx.navigation.findNavController
 import com.example.simplecomputer.R
 import com.example.simplecomputer.dao.OperationDao
@@ -19,6 +20,7 @@ import com.example.simplecomputer.db.OperationDataBase
 import com.example.simplecomputer.entity.OperationEntity
 import com.example.simplecomputer.repository.OperationRepository
 import com.example.simplecomputer.viewmodel.OperationViewModel
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import java.util.regex.Matcher
@@ -65,8 +67,6 @@ class ComputerFragment : Fragment() {
 //        初始化数据库类
         operationRepository = OperationRepository(context!!)
 
-
-
         super.onCreate(savedInstanceState)
     }
 
@@ -74,10 +74,6 @@ class ComputerFragment : Fragment() {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-
-
-
-
         // 膨胀这个片段的布局
 //        binding = FragmentComputerBinding.inflate(inflater, container, false)
 //        给ViewModel中的数据库对象赋值
@@ -199,7 +195,7 @@ class ComputerFragment : Fragment() {
 //        清空编辑框
         binding.clear.setOnClickListener {
             record.str.apply {
-                this.value = StringBuffer(this.value?.append(""))
+                this.value = StringBuffer("")
             }
         }
 //        退格
@@ -273,7 +269,9 @@ class ComputerFragment : Fragment() {
                     date = System.currentTimeMillis()
                 )
 //               插入数据库
-                operationRepository.insert(operationEntity)
+                lifecycleScope.launch(Dispatchers.IO) {
+                    operationRepository.insert(operationEntity)
+                }
             } else {
                 Toast.makeText(this.context, "格式错误 正确格式：数字+运算符+数字", Toast.LENGTH_SHORT).show()
             }

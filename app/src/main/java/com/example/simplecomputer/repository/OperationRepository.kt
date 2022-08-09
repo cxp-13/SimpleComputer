@@ -7,10 +7,10 @@ import androidx.paging.PagingSource
 import com.example.simplecomputer.dao.OperationDao
 import com.example.simplecomputer.db.OperationDataBase
 import com.example.simplecomputer.entity.OperationEntity
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.async
-import kotlinx.coroutines.launch
+import kotlinx.coroutines.*
+import kotlinx.coroutines.flow.flow
+import java.util.*
+
 
 /**
  * @Author:cxp
@@ -26,10 +26,8 @@ class OperationRepository(var context: Context) {
         operationDao = OperationDataBase.getInstance(context)?.getOperationDao()
     }
 
-    fun insert(operationEntity: OperationEntity) {
-        GlobalScope.launch {
+     suspend fun insert(operationEntity: OperationEntity) {
             operationDao?.insert(operationEntity)
-        }
     }
 
     //    room返回livedata或者rxjava相关类型时，会使用异步查询，所以一开始会返回null值。
@@ -38,13 +36,27 @@ class OperationRepository(var context: Context) {
     }
 
     suspend fun getAll(): List<OperationEntity>? {
-        var items: List<OperationEntity>? = null
-        GlobalScope.launch {
-            val temp = async(Dispatchers.IO) {
-                operationDao!!.query()
-            }
-            items = temp.await()
-        }.join()
+        var items: List<OperationEntity> = LinkedList<OperationEntity>()
+//        val job: Job = CoroutineScope(Dispatchers.IO).launch {
+//            val temp: Deferred<List<OperationEntity>> = async(context = Dispatchers.IO) {
+//                operationDao!!.query()
+//            }
+//            items = temp.await()
+//        }
+//        job.join()
+
+//        val job: Job = CoroutineScope(currentCoroutineContext()).launch {
+//                items = operationDao!!.query()
+//        }
+//        val job = CoroutineScope(currentCoroutineContext()).launch(Dispatchers.IO) {
+//            items = operationDao!!.query()
+//        }
+//        Log.i("record", "getAll: ${items}")
+////        items = job.await()
+//        job.join()
+        items = withContext(Dispatchers.IO) {
+            operationDao!!.query()
+        }
         return items
     }
 

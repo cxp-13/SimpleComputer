@@ -2,8 +2,14 @@ package com.example.simplecomputer
 
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.util.Log
 import androidx.fragment.app.commit
+import androidx.lifecycle.lifecycleScope
 import com.example.simplecomputer.navigation.ComputerFragment
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 /**
  * @Author:cxp
@@ -28,7 +34,12 @@ class MainActivity : AppCompatActivity() {
 //            addToBackStack(null)
 //        }
 
-
+        lifecycleScope.launch (Dispatchers.Main){
+            lifecycleScope.launch (Dispatchers.Main){
+                Log.e("test==","111111");
+            }
+            Log.e("test==","222222");
+        }
 
     }
 }

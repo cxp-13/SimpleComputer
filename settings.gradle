@@ -14,3 +14,4 @@ dependencyResolutionManagement {
 }
 rootProject.name = "SimpleComputer"
 include ':app'
+include ':lib'
