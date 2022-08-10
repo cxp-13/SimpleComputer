@@ -7,21 +7,17 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
 import androidx.databinding.DataBindingUtil
-import androidx.fragment.app.*
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.ViewModelProvider
+import androidx.fragment.app.Fragment
+import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.findNavController
 import com.example.simplecomputer.R
-import com.example.simplecomputer.dao.OperationDao
 import com.example.simplecomputer.databinding.FragmentComputerBinding
 import com.example.simplecomputer.databinding.Record
-import com.example.simplecomputer.db.OperationDataBase
 import com.example.simplecomputer.entity.OperationEntity
 import com.example.simplecomputer.repository.OperationRepository
 import com.example.simplecomputer.viewmodel.OperationViewModel
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import java.util.regex.Matcher
 import java.util.regex.Pattern
@@ -112,25 +108,33 @@ class ComputerFragment : Fragment() {
 //        加法
         binding.add.setOnClickListener {
             record.str.apply {
-                this.value = this.value?.append("+")
+                if (checkAndGetResult()) {
+                    this.value = this.value?.append("+")
+                }
             }
         }
 //        减法
         binding.reduce.setOnClickListener {
             record.str.apply {
-                this.value = StringBuffer(this.value?.append("-"))
+                if (checkAndGetResult()) {
+                    this.value = this.value?.append("-")
+                }
             }
         }
 //        乘法
         binding.multiply.setOnClickListener {
             record.str.apply {
-                this.value = StringBuffer(this.value?.append("*"))
+                if (checkAndGetResult()) {
+                    this.value = this.value?.append("*")
+                }
             }
         }
 //        除法
         binding.divide.setOnClickListener {
             record.str.apply {
-                this.value = StringBuffer(this.value?.append("/"))
+                if (checkAndGetResult()) {
+                    this.value = this.value?.append("/")
+                }
             }
         }
 //        数字处理
@@ -206,8 +210,6 @@ class ComputerFragment : Fragment() {
                     it.value = StringBuffer(it.value?.substring(0, len - 1))
                 }
             }
-
-
         }
 //        小数点
         binding.point.setOnClickListener {
@@ -215,66 +217,83 @@ class ComputerFragment : Fragment() {
                 it.value = StringBuffer(it.value?.append("."))
             }
         }
-//        查询全部数据
-        binding.button14.setOnClickListener {
-            operationRepository.getAllLiveData()?.value?.forEach {
-                Log.e(TAG, "onViewCreated: $it")
-            }
-        }
-//        当点击等于号
+        //        当点击等于号
         binding.equalSign.setOnClickListener {
-//      p1:第一个数字  t:运算符  p2:第二个数字
-            var pattern: Pattern =
-                Pattern.compile("^(?<p1>(\\-|\\+)?\\d+(\\.\\d+)?)(?<t>\\D)(?<p2>(\\-|\\+)?\\d+(\\.\\d+)?)\$")
-            var matcher: Matcher = pattern.matcher(record.str.value)
-            var type = '+'
-            var params1 = 0.0
-            var params2 = 0.0
-            var result = 0.0
-            var operationEntity: OperationEntity
-//      如果匹配上
-            if (matcher.find()) {
-                params1 = matcher.group("p1").toDouble()
-                params2 = matcher.group("p2").toDouble()
-                var charArray: CharArray = matcher.group("t").toCharArray()
-                type = charArray[0]
-//                Log.d(TAG, "onViewCreated: $params1 $params2 $type")
-                when (type) {
-                    '+' -> {
-                        result = params1 + params2
-                    }
-                    '-' -> {
-                        result = params1 - params2
-                    }
-                    '*' -> {
-                        result = params1 * params2
-                    }
-                    '/' -> {
-                        result = params1 / params2
-                    }
-                    else -> {
-                        Toast.makeText(this.context, "运算符错误 正确格式：数字+[+/×/÷/-]+数字", 2).show()
-                    }
+            checkAndGetResult()
+        }
+    }
+
+    private fun checkAndGetResult(): Boolean {
+//        //        查询全部数据
+//        binding.button14.setOnClickListener {
+//            operationRepository.getAllLiveData()?.value?.forEach {
+//                Log.e(TAG, "onViewCreated: $it")
+//            }
+//        }
+        //      p1:第一个数字  t:运算符  p2:第二个数字
+        val value = record.str.value
+        var pattern: Pattern =
+            Pattern.compile("^(?<p1>(\\-|\\+)?\\d+(\\.\\d+)?)(?<t>\\D)(?<p2>(\\-|\\+)?\\d+(\\.\\d+)?)\$")
+        var matcher: Matcher = pattern.matcher(value)
+        var type: Char
+        var params1: Double
+        var params2: Double
+        var result: Double
+        var operationEntity: OperationEntity
+//单个数字
+        var patternSingle: Pattern =
+            Pattern.compile("^(\\-|\\+)?\\d+(\\.\\d+)?\$")
+        var matcherSingle: Matcher = patternSingle.matcher(value)
+
+        val findSingle = matcherSingle.find()
+        val find = matcher.find()
+
+        if (find && !findSingle) {
+            params1 = matcher.group("p1").toDouble()
+            params2 = matcher.group("p2").toDouble()
+            var charArray: CharArray = matcher.group("t").toCharArray()
+            type = charArray[0]
+            //                Log.d(TAG, "onViewCreated: $params1 $params2 $type")
+            when (type) {
+                '+' -> {
+                    result = params1 + params2
                 }
-//              将结果赋值给record
-                record.str.let {
-                    it.value = (StringBuffer(result.toString()))
+                '-' -> {
+                    result = params1 - params2
                 }
-//              生成需要插入数据库的记录
-                operationEntity = OperationEntity(
-                    firstArg = params1,
-                    secondArg = params2,
-                    result = result,
-                    type = type,
-                    date = System.currentTimeMillis()
-                )
-//               插入数据库
-                lifecycleScope.launch(Dispatchers.IO) {
-                    operationRepository.insert(operationEntity)
+                '*' -> {
+                    result = params1 * params2
                 }
-            } else {
-                Toast.makeText(this.context, "格式错误 正确格式：数字+运算符+数字", Toast.LENGTH_SHORT).show()
+                '/' -> {
+                    result = params1 / params2
+                }
+                else -> {
+                    Toast.makeText(this.context, "运算符错误 正确格式：数字+[+/×/÷/-]+数字", Toast.LENGTH_SHORT)
+                        .show()
+                    return false
+                }
+            }
+            //              将结果赋值给record
+            record.str.value = StringBuffer(result.toString())
+            //              生成需要插入数据库的记录
+            operationEntity = OperationEntity(
+                firstArg = params1,
+                secondArg = params2,
+                result = result,
+                type = type,
+                date = System.currentTimeMillis()
+            )
+            //               插入数据库
+            lifecycleScope.launch(Dispatchers.IO) {
+                operationRepository.insert(operationEntity)
             }
         }
+        return if (findSingle || find) {
+            true
+        } else {
+            Toast.makeText(this.context, "格式错误 正确格式：数字+运算符+数字", Toast.LENGTH_SHORT).show()
+            false
+        }
+
     }
 }
